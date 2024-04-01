@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Friends Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    color: #333;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 5px;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  #friends-list {
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0 auto; 
+    width: fit-content;
+  }
+
+  #friends-list li {
+    margin-top: 10px;
+    list-style: decimal;
+  }
+
+  .friend-info {
+    margin-top: 10px;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    padding: 8px;
+    margin: 5px;
+    width: 150px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  #age-stats {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+  <h1>Friends</h1>
+  <button onclick="generateFriends()">Generate Friends</button><br><br> 
+  <div id="friends-generated"></div>
+  <div id="friends-list"></div>
+  <div id="age-stats"></div>
+  <button onclick="calculateSum()">Calculate Sum</button>
+  <button onclick="calculateAverage()">Calculate Average</button>
+  <button onclick="calculateMinAge()">Calculate Min Age</button>
+  <button onclick="calculateMaxAge()">Calculate Max Age</button>
+  <button onclick="reset()">Reset</button>
+
+  <script>
+    function generateFriends() {
+      // Clear previous friends and age stats
+      document.getElementById('friends-list').innerHTML = '';
+      document.getElementById('age-stats').innerHTML = '';
+
+      // Generate a random number of friends between 1 and 10
+      var numFriends = Math.floor(Math.random() * 9) + 1;
+
+      document.getElementById('friends-generated').innerText = 'Number of friends generated: ' + numFriends;
+
+      // Create and display the list of friends
+      var friendsList = document.createElement('ul');
+      for (var i = 0; i < numFriends; i++) {
+        var friend = document.createElement('li');
+        var nicknameInput = document.createElement('input');
+        nicknameInput.setAttribute('type', 'text');
+        nicknameInput.setAttribute('placeholder', 'Nickname');
+        var ageInput = document.createElement('input');
+        ageInput.setAttribute('type', 'number');
+        ageInput.setAttribute('placeholder', 'Age');
+        friend.appendChild(nicknameInput);
+        friend.appendChild(ageInput);
+        friendsList.appendChild(friend);
+      }
+      document.getElementById('friends-list').appendChild(friendsList);
+    }
+
+    function calculateAgeStats() {
+      var inputs = document.querySelectorAll('input[type="number"]');
+      var sum = 0;
+      var count = 0;
+      var minAge = Infinity;
+      var minAgeFriends = [];
+      var maxAge = -Infinity;
+      var maxAgeFriends = [];
+      inputs.forEach(function(input) {
+        if (!isNaN(input.value)) {
+          var age = parseInt(input.value);
+          sum += age;
+          count++;
+          if (age < minAge) {
+            minAge = age;
+            minAgeFriends = [input.parentNode.querySelector('input[type="text"]').value];
+          } else if (age === minAge) {
+            minAgeFriends.push(input.parentNode.querySelector('input[type="text"]').value);
+          }
+
+          if (age > maxAge) {
+            maxAge = age;
+            maxAgeFriends = [input.parentNode.querySelector('input[type="text"]').value];
+          } else if (age === maxAge) {
+            maxAgeFriends.push(input.parentNode.querySelector('input[type="text"]').value);
+          }
+        }
+      });
+      var average = count > 0 ? sum / count : 0;
+      return { sum: sum, count: count, average: average, minAge: minAge, minAgeFriends: minAgeFriends, maxAge: maxAge, maxAgeFriends: maxAgeFriends };
+    }
+
+    function displaySumAge(sum) {
+      document.getElementById('age-stats').innerHTML = 'Total age of all friends: ' + sum + '<br>'; 
+    }
+
+    function displayAvgAge(average) {
+        document.getElementById('age-stats').innerHTML = 'Average age of friends: ' + average.toFixed(2);
+      }
+
+    function displayMinAgeFriends(minAge, minAgeFriends) {
+      document.getElementById('age-stats').innerHTML = 'Minimum age among friends: ' + minAge + '<br>' +
+                                                              'Friends with minimum age: ' + minAgeFriends.join(', ');
+    }
+
+    function displayMaxAgeFriends(maxAge, maxAgeFriends) {
+        document.getElementById('age-stats').innerHTML = 'Maximum age among friends: ' + maxAge + '<br>' +
+                                                                'Friends with maximum age: ' + maxAgeFriends.join(', ');
+      }
+
+    function calculateSum() {
+      var stats = calculateAgeStats();
+      displaySumAge(stats.sum);
+    }
+
+    function calculateAverage() {
+      var stats = calculateAgeStats();
+      displayAvgAge(stats.average);
+    }
+
+    function calculateMinAge() {
+      var stats = calculateAgeStats();
+      displayMinAgeFriends(stats.minAge, stats.minAgeFriends);
+    }
+
+    function calculateMaxAge() {
+      var stats = calculateAgeStats();
+      displayMaxAgeFriends(stats.maxAge, stats.maxAgeFriends);
+    }
+
+    function reset() {
+      document.getElementById('friends-list').innerHTML = '';
+      document.getElementById('age-stats').innerHTML = '';
+    }
+
+  </script>
+</body>
+</html>
